@@ -153,10 +153,35 @@ impl Nickel {
             (StatusCode::NotFound, "File Not Found")
         });
 
-        println!("Listening on https://{}", addr);
+        let listener = Server::new(self.middleware_stack).serve_https(addr, cert, key).unwrap();
+        
+        println!("Listening on https://{}", listener.socket);
         println!("Ctrl-C to shutdown server");
 
-        Server::new(self.middleware_stack).serve_https(addr, cert, key);
+    }
+    
+    pub fn listen_with_threads<T: ToSocketAddrs>(mut self, addr: T, n: usize) {
+        self.middleware_stack.add_middleware(middleware! {
+            (StatusCode::NotFound, "File Not Found")
+        });
+
+        let server = Server::new(self.middleware_stack);
+        let listener = server.serve_with_threads(addr, n).unwrap();
+
+        println!("Listening on http://{}", listener.socket);
+        println!("Ctrl-C to shutdown server");
+    }
+    
+    pub fn listen_https_with_threads<T: ToSocketAddrs + Display>(mut self, addr: T, cert: &Path, key: &Path, n: usize) {
+        self.middleware_stack.add_middleware(middleware! {
+            (StatusCode::NotFound, "File Not Found")
+        });
+
+        let listener = Server::new(self.middleware_stack).serve_https_with_threads(addr, cert, key, n).unwrap();
+        
+        println!("Listening on https://{}", listener.socket);
+        println!("Ctrl-C to shutdown server");
+
     }
 }
 
