@@ -17,9 +17,9 @@ impl<'a, 'b, 'k> Request<'a, 'b, 'k> {
         }
     }
 
-    pub fn param(&self, key: &str) -> &str {
+    pub fn param(&self, key: &str) -> String {
     //pub fn param(&mut self, key: &str) -> &str {
-        self.route_result.as_ref().unwrap().param(key)
+        self.route_result.as_ref().unwrap().param(key).to_string()
     }
 
     pub fn path_without_query(&self) -> Option<&str> {
